@@ -13,14 +13,27 @@ namespace WebAPI_Exception.Controllers
         [HttpGet]
         public IEnumerable<string> Get()
         {
-            return new string[] { "value1", "value2" };
+            throw new Exception("Something Went wrong"); // Bad Practice, it produces 500 internal server error
         }
 
         // GET api/values/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public IActionResult Get(int id)
         {
-            return "value";
+            try
+            {
+                if (id == 101)
+                {
+                    throw new Exception("Incorrect ID");
+                }
+
+                return new ObjectResult("value " + id);
+            }
+            catch (Exception ex)
+            {
+                // Good practice, this gives user more useful information
+                return new BadRequestObjectResult(ExceptionHelper.ProcessError(ex)); 
+            }
         }
 
         // POST api/values
